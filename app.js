@@ -12,23 +12,28 @@ var productsRoute= require('./routes/product');
 var collectionRoute= require('./routes/collection');
 var orderRoute=require('./routes/order');
 const morgan = require('morgan');
+var dotenv = require('dotenv');
+//upload folders for files upload
+//app.use(express.static('uploads'));
+dotenv.config();
 
 // mongoose.connect('mongodb+srv://inamulhaqmayo:'+
 // process.env.MONGO_ATLAS_PW+
 // '@nodejs1.xb9ir.mongodb.net/nodejs1?retryWrites=true&w=majority',{
 //   userMongoClient:true
 // })
-debugger;
-mongoose.connect(
-  process.env.MONGO_ATLAS_PW,
-  { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false },
-  ()=> console.log("Connected to db!")
-);
+mongoose 
+ .connect(process.env.DB_CONNECT, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+         })   
+ .then(() => console.log("Database connected!"))
+ .catch(err => console.log(err));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-
+mongoose.Promise=global.Promise;
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -42,7 +47,9 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/products',productsRoute);
 app.use('/collection',collectionRoute);
-app.use('/order',orderRoute)
+app.use('/order',orderRoute);
+app.use('/uploads', express.static('uploads'));
+
 
 // error handler
 app.use(function(err, req, res, next) {
